@@ -21,6 +21,7 @@
 <script>
 import axios from 'axios';
 import jwt from 'jwt-simple';
+import sha256 from 'crypto-js/sha256';
 
 const client = axios.create({
   baseURL: 'http://localhost:3001/',
@@ -44,9 +45,7 @@ export default {
       }
     },
     login: function(evt) {
-      let that = this;
-      let token = jwt.encode({username: this.user}, this.password);
-      client.post("/login", {username: this.user, password: this.password}).then((res) => {
+      client.post("/login", {username: this.user, password: sha256(this.password).toString()}).then((res) => {
         window.localStorage.setItem("secret", res.data);
         window.localStorage.setItem("username", this.user);
         document.cookie = "username=" + this.user;
@@ -57,8 +56,7 @@ export default {
 
     },
     register: function() {
-      let token = jwt.encode({username: this.user}, this.password);
-      client.post("/register", {username: this.user, password: this.password}).then((res) => {
+      client.post("/register", {username: this.user, password: sha256(this.password).toString()}).then((res) => {
         document.cookie = "username=" + this.user;
         window.localStorage.setItem("secret", res.data);
         window.localStorage.setItem("username", this.user);
